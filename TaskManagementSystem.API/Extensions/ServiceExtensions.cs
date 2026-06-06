@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,6 +51,17 @@ namespace TaskManagementSystem.API.Extensions
                     ValidAudience = jwtSettings["Audience"],
                     ValidIssuer = jwtSettings["Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.ContainsKey("jwt"))
+                        {
+                            context.Token = context.Request.Cookies["jwt"];
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }

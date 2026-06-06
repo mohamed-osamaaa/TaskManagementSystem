@@ -12,24 +12,38 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Add Application and Infrastructure Services
 builder.Services.AddApplicationServices();
 
-// Add JWT Authentication
-builder.Services.AddJwtAuthentication(builder.Configuration);
-
-// Add Swagger with Auth
-builder.Services.AddSwaggerWithAuth();
+// Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Add Identity (Must be before JWT so JWT can override default schemes)
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+// Add JWT Authentication
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add Swagger with Auth
+builder.Services.AddSwaggerWithAuth();
 
 var app = builder.Build();
 
@@ -43,6 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,7 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Application.DTOs;
@@ -26,7 +29,10 @@ namespace TaskManagementSystem.API.Controllers
             var result = await _authService.RegisterAsync(model);
 
             if (result.Success)
+            {
+                SetTokenCookie(result.Data?.Token);
                 return Ok(result);
+            }
 
             return BadRequest(result);
         }
@@ -40,9 +46,27 @@ namespace TaskManagementSystem.API.Controllers
             var result = await _authService.LoginAsync(model);
 
             if (result.Success)
+            {
+                SetTokenCookie(result.Data?.Token);
                 return Ok(result);
+            }
 
             return Unauthorized(result);
+        }
+
+        private void SetTokenCookie(string? token)
+        {
+            if (string.IsNullOrEmpty(token)) return;
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7),
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
+            
+            Response.Cookies.Append("jwt", token, cookieOptions);
         }
 
         [Authorize]
