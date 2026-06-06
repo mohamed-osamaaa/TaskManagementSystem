@@ -1,11 +1,11 @@
-﻿using TaskManagementSystem.Domain.Enums;
+using TaskManagementSystem.Domain.Enums;
 
 namespace TaskManagementSystem.Domain.Entities;
 
 
 public class TaskItem
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public string Title { get; set; } = null!;
 

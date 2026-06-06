@@ -10,7 +10,7 @@ namespace TaskManagementSystem.Infrastructure.Seeding
         public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
             string[] roleNames = { "Admin", "User" };
             
@@ -19,7 +19,7 @@ namespace TaskManagementSystem.Infrastructure.Seeding
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    await roleManager.CreateAsync(new IdentityRole<Guid>(roleName));
                 }
             }
         }

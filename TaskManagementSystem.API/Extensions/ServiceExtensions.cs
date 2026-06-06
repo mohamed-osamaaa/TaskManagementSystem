@@ -11,7 +11,10 @@ using Microsoft.OpenApi.Models;
 using TaskManagementSystem.Application.Interfaces;
 using TaskManagementSystem.Application.Validators;
 using TaskManagementSystem.Application.Services;
+using TaskManagementSystem.Application.Common;
 using TaskManagementSystem.Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace TaskManagementSystem.API.Extensions
 {
@@ -25,6 +28,21 @@ namespace TaskManagementSystem.API.Extensions
             // Register Validators
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
+
+            // Configure API Behavior for custom validation response
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Where(e => e.Value?.Errors.Count > 0)
+                        .SelectMany(e => e.Value!.Errors.Select(x => x.ErrorMessage))
+                        .ToList();
+
+                    var response = ApiResponse<object>.FailureResponse("Validation failed.", errors);
+                    return new BadRequestObjectResult(response);
+                };
+            });
         }
 
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)

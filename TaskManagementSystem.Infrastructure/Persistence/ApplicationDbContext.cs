@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Domain.Entities;
 
 namespace TaskManagementSystem.Infrastructure.Persistence;
 
 public class ApplicationDbContext
-    : IdentityDbContext<ApplicationUser>
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -10,9 +10,9 @@ namespace TaskManagementSystem.Domain.Entities;
 
 public class UserSubscription
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-    public string UserId { get; set; } = null!;
+    public Guid UserId { get; set; }
 
     public SubscriptionType SubscriptionType { get; set; }
 

@@ -35,7 +35,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add Identity (Must be before JWT so JWT can override default schemes)
 builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>()
+    .AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
