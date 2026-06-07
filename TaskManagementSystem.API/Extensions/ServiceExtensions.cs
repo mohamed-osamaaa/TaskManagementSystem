@@ -13,6 +13,7 @@ using TaskManagementSystem.Application.Validators;
 using TaskManagementSystem.Application.Services;
 using TaskManagementSystem.Application.Common;
 using TaskManagementSystem.Infrastructure.Services;
+using TaskManagementSystem.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -23,7 +24,10 @@ namespace TaskManagementSystem.API.Extensions
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITasksRepository, TasksRepository>();
+            services.AddScoped<ITasksService, TasksService>();
 
             // Register Validators
             services.AddFluentValidationAutoValidation();

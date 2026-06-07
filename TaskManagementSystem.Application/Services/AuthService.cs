@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using TaskManagementSystem.Application.Common;
 using TaskManagementSystem.Application.DTOs;
 using TaskManagementSystem.Application.Interfaces;
@@ -12,18 +11,18 @@ namespace TaskManagementSystem.Application.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthRepository _authRepository;
         private readonly IJwtService _jwtService;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtService jwtService)
+        public AuthService(IAuthRepository authRepository, IJwtService jwtService)
         {
-            _userManager = userManager;
+            _authRepository = authRepository;
             _jwtService = jwtService;
         }
 
         public async Task<ApiResponse<AuthResponseDto>> RegisterAsync(RegisterDto request)
         {
-            var userExists = await _userManager.FindByEmailAsync(request.Email);
+            var userExists = await _authRepository.FindByEmailAsync(request.Email);
             if (userExists != null)
                 return ApiResponse<AuthResponseDto>.FailureResponse("User already exists!");
 
@@ -35,17 +34,17 @@ namespace TaskManagementSystem.Application.Services
                 FullName = request.FullName
             };
 
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var result = await _authRepository.CreateUserAsync(user, request.Password);
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description).ToList();
+                var errors = result.Errors.ToList();
                 return ApiResponse<AuthResponseDto>.FailureResponse("User creation failed! Please check user details and try again.", errors);
             }
 
             // Assign "User" role by default
-            await _userManager.AddToRoleAsync(user, "User");
+            await _authRepository.AddToRoleAsync(user, "User");
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _authRepository.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, roles);
 
             var responseDto = new AuthResponseDto
@@ -62,10 +61,10 @@ namespace TaskManagementSystem.Application.Services
 
         public async Task<ApiResponse<AuthResponseDto>> LoginAsync(LoginDto request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, request.Password))
+            var user = await _authRepository.FindByEmailAsync(request.Email);
+            if (user != null && await _authRepository.CheckPasswordAsync(user, request.Password))
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
+                var userRoles = await _authRepository.GetRolesAsync(user);
                 var token = _jwtService.GenerateToken(user, userRoles);
 
                 var responseDto = new AuthResponseDto
@@ -81,6 +80,26 @@ namespace TaskManagementSystem.Application.Services
             }
 
             return ApiResponse<AuthResponseDto>.FailureResponse("Invalid credentials.");
+        }
+
+        public async Task<ApiResponse<IEnumerable<UserDto>>> GetAllUsersAsync()
+        {
+            var users = await _authRepository.GetAllUsersAsync();
+            var userDtos = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                var roles = await _authRepository.GetRolesAsync(user);
+                userDtos.Add(new UserDto
+                {
+                    Id = user.Id.ToString(),
+                    Email = user.Email ?? string.Empty,
+                    FullName = user.FullName,
+                    Roles = roles
+                });
+            }
+
+            return ApiResponse<IEnumerable<UserDto>>.SuccessResponse(userDtos, "Users retrieved successfully.");
         }
     }
 }

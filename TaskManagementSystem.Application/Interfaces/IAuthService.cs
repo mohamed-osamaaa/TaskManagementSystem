@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskManagementSystem.Application.Common;
 using TaskManagementSystem.Application.DTOs;
@@ -8,5 +9,6 @@ namespace TaskManagementSystem.Application.Interfaces
     {
         Task<ApiResponse<AuthResponseDto>> RegisterAsync(RegisterDto request);
         Task<ApiResponse<AuthResponseDto>> LoginAsync(LoginDto request);
+        Task<ApiResponse<IEnumerable<UserDto>>> GetAllUsersAsync();
     }
 }

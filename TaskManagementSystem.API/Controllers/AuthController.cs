@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Application.DTOs;
 using TaskManagementSystem.Application.Interfaces;
@@ -85,6 +84,18 @@ namespace TaskManagementSystem.API.Controllers
             };
 
             return Ok(userDetails);
+        }
+
+        [Authorize(Roles = "Admin")] // Optional: protect with Admin role or just Authorize
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _authService.GetAllUsersAsync();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
     }
 }
