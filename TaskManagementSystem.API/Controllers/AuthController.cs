@@ -86,16 +86,17 @@ namespace TaskManagementSystem.API.Controllers
             return Ok(userDetails);
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("users")]
-        public async Task<IActionResult> GetAllUsers()
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-            var result = await _authService.GetAllUsersAsync();
-            if (result.Success)
+            Response.Cookies.Delete("jwt", new CookieOptions
             {
-                return Ok(result);
-            }
-            return BadRequest(result);
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+
+            return Ok(new { message = "Logged out successfully" });
         }
     }
 }

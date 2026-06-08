@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TaskManagementSystem.Application.Common;
 using TaskManagementSystem.Application.DTOs;
 using TaskManagementSystem.Application.Interfaces;
+using TaskManagementSystem.Domain.Entities;
 
 namespace TaskManagementSystem.Application.Services
 {
@@ -69,9 +70,9 @@ namespace TaskManagementSystem.Application.Services
             return ApiResponse<TaskItemDto>.SuccessResponse(taskDto, "Task created successfully.");
         }
 
-        public async Task<ApiResponse<TaskItemDto>> UpdateTaskAsync(TaskItemDto taskDto)
+        public async Task<ApiResponse<TaskItemDto>> UpdateTaskAsync(Guid id, TaskItemDto taskDto)
         {
-            var task = await _tasksRepository.GetByIdAsync(taskDto.Id);
+            var task = await _tasksRepository.GetByIdAsync(id);
 
             if (task == null)
             {
@@ -99,7 +100,7 @@ namespace TaskManagementSystem.Application.Services
 
             await _tasksRepository.DeleteTaskAsync(task);
 
-            return ApiResponse<TaskItemDto>.SuccessResponse(null, "Task deleted successfully.");
+            return ApiResponse<TaskItemDto>.SuccessResponse(null!, "Task deleted successfully.");
         }
     }
 }

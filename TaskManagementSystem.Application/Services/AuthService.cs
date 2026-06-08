@@ -82,24 +82,5 @@ namespace TaskManagementSystem.Application.Services
             return ApiResponse<AuthResponseDto>.FailureResponse("Invalid credentials.");
         }
 
-        public async Task<ApiResponse<IEnumerable<UserDto>>> GetAllUsersAsync()
-        {
-            var users = await _authRepository.GetAllUsersAsync();
-            var userDtos = new List<UserDto>();
-
-            foreach (var user in users)
-            {
-                var roles = await _authRepository.GetRolesAsync(user);
-                userDtos.Add(new UserDto
-                {
-                    Id = user.Id.ToString(),
-                    Email = user.Email ?? string.Empty,
-                    FullName = user.FullName,
-                    Roles = roles
-                });
-            }
-
-            return ApiResponse<IEnumerable<UserDto>>.SuccessResponse(userDtos, "Users retrieved successfully.");
-        }
     }
 }

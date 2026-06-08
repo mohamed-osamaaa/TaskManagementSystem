@@ -38,7 +38,7 @@ namespace TaskManagementSystem.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(TaskItem task)
+        public async Task DeleteTaskAsync(TaskItem task)
         {
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();

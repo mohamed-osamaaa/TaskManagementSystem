@@ -28,6 +28,15 @@ namespace TaskManagementSystem.API.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITasksRepository, TasksRepository>();
             services.AddScoped<ITasksService, TasksService>();
+            
+            services.AddScoped<IUserTasksRepository, UserTasksRepository>();
+            services.AddScoped<IUserTasksService, UserTasksService>();
+            
+            services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+            services.AddScoped<ISubscriptionsService, SubscriptionsService>();
+            
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IUsersService, UsersService>();
 
             // Register Validators
             services.AddFluentValidationAutoValidation();
