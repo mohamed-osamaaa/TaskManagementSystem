@@ -32,5 +32,74 @@ namespace TaskManagementSystem.Application.Services
 
             return ApiResponse<IEnumerable<TaskItemDto>>.SuccessResponse(taskDtos, "Tasks retrieved successfully.");
         }
+
+        public async Task<ApiResponse<TaskItemDto>> GetTaskByIdAsync(Guid id)
+        {
+            var task = await _tasksRepository.GetByIdAsync(id);
+
+            if (task == null)
+            {
+                return ApiResponse<TaskItemDto>.FailureResponse("Task not found.");
+            }
+
+            var taskDto = new TaskItemDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                Status = task.Status,
+                RequiredSubscriptionLevel = task.RequiredSubscriptionLevel
+            };
+
+            return ApiResponse<TaskItemDto>.SuccessResponse(taskDto, "Task retrieved successfully.");
+        }
+
+        public async Task<ApiResponse<TaskItemDto>> CreateTaskAsync(TaskItemDto taskDto)
+        {
+            var task = new TaskItem
+            {
+                Title = taskDto.Title,
+                Description = taskDto.Description,
+                Status = taskDto.Status,
+                RequiredSubscriptionLevel = taskDto.RequiredSubscriptionLevel
+            };
+
+            await _tasksRepository.CreateTaskAsync(task);
+
+            return ApiResponse<TaskItemDto>.SuccessResponse(taskDto, "Task created successfully.");
+        }
+
+        public async Task<ApiResponse<TaskItemDto>> UpdateTaskAsync(TaskItemDto taskDto)
+        {
+            var task = await _tasksRepository.GetByIdAsync(taskDto.Id);
+
+            if (task == null)
+            {
+                return ApiResponse<TaskItemDto>.FailureResponse("Task not found.");
+            }
+
+            task.Title = taskDto.Title;
+            task.Description = taskDto.Description;
+            task.Status = taskDto.Status;
+            task.RequiredSubscriptionLevel = taskDto.RequiredSubscriptionLevel;
+
+            await _tasksRepository.UpdateTaskAsync(task);
+
+            return ApiResponse<TaskItemDto>.SuccessResponse(taskDto, "Task updated successfully.");
+        }
+
+        public async Task<ApiResponse<TaskItemDto>> DeleteTaskAsync(Guid id)
+        {
+            var task = await _tasksRepository.GetByIdAsync(id);
+
+            if (task == null)
+            {
+                return ApiResponse<TaskItemDto>.FailureResponse("Task not found.");
+            }
+
+            await _tasksRepository.DeleteTaskAsync(task);
+
+            return ApiResponse<TaskItemDto>.SuccessResponse(null, "Task deleted successfully.");
+        }
     }
 }

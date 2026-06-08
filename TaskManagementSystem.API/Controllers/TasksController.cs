@@ -25,5 +25,52 @@ namespace TaskManagementSystem.API.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTaskById(Guid id)
+        {
+            var result = await _tasksService.GetTaskByIdAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateTask([FromBody] TaskItemDto taskDto)
+        {
+            var result = await _tasksService.CreateTaskAsync(taskDto);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTask(Guid id, [FromBody] TaskItemDto taskDto)
+        {
+            var result = await _tasksService.UpdateTaskAsync(id, taskDto);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(Guid id)
+        {
+            var result = await _tasksService.DeleteTaskAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

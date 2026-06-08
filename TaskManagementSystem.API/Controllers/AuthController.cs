@@ -86,7 +86,7 @@ namespace TaskManagementSystem.API.Controllers
             return Ok(userDetails);
         }
 
-        [Authorize(Roles = "Admin")] // Optional: protect with Admin role or just Authorize
+        [Authorize(Roles = "Admin")]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
